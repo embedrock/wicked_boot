@@ -4,6 +4,7 @@
 #include "version.h"
 #include "version_check.h"
 #include "app.h"
+#include "tim.h"
 #include <string.h>
 
 #include "main.h"
@@ -11,6 +12,7 @@
 #include "bootutil/image.h"
 #include "bootutil/bootutil_log.h"
 #include "Driver_Usart.h"
+#include "Driver_GPIO.h"
 #include "boot_hal.h"
 
 #include "flash_map_backend/flash_map_backend.h"
@@ -79,6 +81,7 @@ static void do_boot(struct boot_rsp *rsp)
 
 #if defined(MCUBOOT_HAVE_LOGGING)
 //    stdio_uninit();
+    status_led_off();
 #endif
 
     /* This function never returns, because it calls the secure application
@@ -88,9 +91,9 @@ static void do_boot(struct boot_rsp *rsp)
 }
 
 void setup(void){
-    BOOT_LOG_INF("Bootloader Version: %d.%d.%d", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  BOOT_LOG_INF("Bootloader Version: %d.%d.%d", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
 	BOOT_LOG_INF("Build: %s %s (git: %s)", FW_BUILD_DATE, FW_BUILD_TIME, FW_GIT_HASH);
-
 #ifdef STM32F407xx
     static LCD_HandleTypeDef hlcd1 = {.delay_ms = My_Delay}; //HAL_Delay;
     lcd_printer_msg_t msg;
@@ -140,13 +143,18 @@ void emergency_cli(void){
 
     sShellImpl shell_impl = { .send_char = console_putc, };
     shell_boot(&shell_impl);
-
+    __HAL_TIM_SET_AUTORELOAD(&htim3, 5000 - 1);
     while (true) {
         tud_task();
         c = console_getc(0);
         if((int8_t)c != - 1){
             shell_receive_char(c);
         }
+
+        //if(++cnt > 0x9FFF){
+        //  status_led_toggle();
+        //  cnt = 0;
+        //}
         // if(reboot_flag){
         //     uint32_t i = 0x1FFF;
         //     while(i--){
