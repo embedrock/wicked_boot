@@ -81,7 +81,6 @@ static void do_boot(struct boot_rsp *rsp)
 
 #if defined(MCUBOOT_HAVE_LOGGING)
 //    stdio_uninit();
-    status_led_off();
 #endif
 
     /* This function never returns, because it calls the secure application
@@ -150,11 +149,6 @@ void emergency_cli(void){
         if((int8_t)c != - 1){
             shell_receive_char(c);
         }
-
-        //if(++cnt > 0x9FFF){
-        //  status_led_toggle();
-        //  cnt = 0;
-        //}
         // if(reboot_flag){
         //     uint32_t i = 0x1FFF;
         //     while(i--){
