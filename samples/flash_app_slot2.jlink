@@ -1,5 +1,0 @@
-r
-h
-loadbin "samples/gas-lighter-fw_signed-nextv.bin", 0x08080000
-r
-q

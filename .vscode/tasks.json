@@ -4,7 +4,7 @@
 		{
             "id": "buildPreset",
             "type": "pickString",
-            "description": "Выберите конфигурацию сборки (папку)",
+            "description": "choose build configuration",
             "options": [
                 "stm32f4-debug",
                 "stm32f7-debug"
@@ -14,7 +14,7 @@
         {
             "id": "targetDevice",
             "type": "pickString",
-            "description": "Выберите целевой микроконтроллер",
+            "description": "choose microcontroller",
             "options": [
                 "STM32F407VG",
                 "STM32F746NG"
@@ -26,15 +26,25 @@
             "type": "pickString",
             "description": "Choose slot",
             "options": [
-                "slot1",
-                "slot2"
+                "slot0",
+                "slot1"
             ],
             "default": "slot1"
         },
 		{
+            "id": "appVersion",
+            "type": "pickString",
+            "description": "Choose version",
+            "options": [
+                "uart_v1",
+                "uart_v2"
+            ],
+            "default": "uart_v1"
+        },
+		{
 			"id": "gdbMode",
 			"type": "pickString",
-			"description": "Режим запуска QEMU",
+			"description": "QEMU run mode",
 			"options": [
 				"-gdb tcp::1234 -S",
 				""
@@ -59,7 +69,7 @@
 			"detail": "CMake template build task"
 		},
 		{
-            "label": "⚡ Flash (J-Link)",
+            "label": "⚡ Flash (J-Link)(Win)",
             "type": "shell",
             "command": "cmd",
             "args": [
@@ -70,11 +80,10 @@
                 "cwd": "${workspaceFolder}/build"
             },
             "group": "build",
-            "detail": "Динамическая прошивка через J-Link (выбор пресета и MCU)",
             "problemMatcher": []
         },
         {
-            "label": "⚡ Flash Signed App (J-Link) - (STM32F407 only)",
+            "label": "⚡ Flash Signed App (J-Link)(Win) - (STM32F407 only)",
             "type": "shell",
             "command": "JLink.exe",
             "args": [
@@ -82,18 +91,17 @@
                 "-if", "SWD",
                 "-speed", "4000",
                 "-NoGui", "1",
-                "-CommandFile", "samples/flash_app_${input:targetSlot}.jlink"
+                "-CommandFile", "scripts/flash_app_${input:targetSlot}.jlink"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "detail": "Прошивает signed_app.bin в выбранный слот через J-Link",
             "problemMatcher": []
 			//"dependsOn": "1. Sign App for MCUboot"
         },
         {
-            "label": "🧹 Erase (J-Link)",
+            "label": "🧹 Erase (J-Link)(Win)",
             "type": "shell",
             "command": "cmd",
             "args": [
@@ -117,8 +125,8 @@
 				"-serial", "mon:stdio",
 				"-gdb", "tcp::1234", "-S",        
 				"-kernel", "${command:cmake.launchTargetPath}",
-				"-device", "loader,file=/home/dev/samples/gas-lighter-fw_signed_qemu.bin,addr=0x08040000,force-raw=on",
-				"-device", "loader,file=/home/dev/samples/gas-lighter-fw_signed_qemu-nextv.bin,addr=0x08080000,force-raw=on"
+				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v1.bin,addr=0x08040000,force-raw=on",
+				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v2.bin,addr=0x08080000,force-raw=on"
 			],
 			"isBackground": true,
 			"problemMatcher": {
@@ -136,8 +144,8 @@
 				"-nographic", 
 				"-serial", "mon:stdio",     
 				"-kernel", "${command:cmake.launchTargetPath}",
-				"-device", "loader,file=/home/dev/samples/gas-lighter-fw_signed_qemu.bin,addr=0x08040000,force-raw=on",
-				"-device", "loader,file=/home/dev/samples/gas-lighter-fw_signed_qemu-nextv.bin,addr=0x08080000,force-raw=on"
+				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v1.bin,addr=0x08040000,force-raw=on",
+				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v2.bin,addr=0x08080000,force-raw=on"
 			],
 			"isBackground": true,
 			"problemMatcher": {
@@ -212,37 +220,20 @@
 				"cwd": "${workspaceFolder}"
 			},
 			"group": "build",
-			"detail": "flash ELF via JLinkExe",
 			"problemMatcher": []
 		},
 		{
-			"label": "⚡ Flash Remote Slot0",
+			"label": "⚡ Flash Remote Slot",
 			"type": "shell",
 			"command": "sh",
 			"args": [
 				"-c",
-				"scp ${workspaceFolder}/samples/gas-lighter-fw_signed.bin ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/image0.bin && scp ${workspaceFolder}/scripts/flash_slot0_remote.jlink ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/flash_slot0.jlink && ssh ${config:remoteJLinkUser}@${config:remoteJLinkHost} \"JLinkExe -device ${input:targetDevice} -if SWD -speed 4000 -NoGui 1 -CommandFile /tmp/flash_slot0.jlink\""
+				"scp ${workspaceFolder}/samples/app_signed_${input:appVersion}.bin ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/image.bin && scp ${workspaceFolder}/scripts/flash_${input:targetSlot}_remote.jlink ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/flash_slot.jlink && ssh ${config:remoteJLinkUser}@${config:remoteJLinkHost} \"JLinkExe -device ${input:targetDevice} -if SWD -speed 4000 -NoGui 1 -CommandFile /tmp/flash_slot.jlink\""
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
 			"group": "build",
-			"detail": "flash ELF via JLinkExe",
-			"problemMatcher": []
-		},
-		{
-			"label": "⚡ Flash Remote Slot1",
-			"type": "shell",
-			"command": "sh",
-			"args": [
-				"-c",
-				"scp ${workspaceFolder}/samples/gas-lighter-fw_signed-nextv.bin ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/image1.bin && scp ${workspaceFolder}/scripts/flash_slot1_remote.jlink ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/flash_slot1.jlink && ssh ${config:remoteJLinkUser}@${config:remoteJLinkHost} \"JLinkExe -device ${input:targetDevice} -if SWD -speed 4000 -NoGui 1 -CommandFile /tmp/flash_slot1.jlink\""
-			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"group": "build",
-			"detail": "flash ELF via JLinkExe",
 			"problemMatcher": []
 		},
 		{
@@ -251,13 +242,12 @@
 			"command": "sh",
 			"args": [
 				"-c",
-				"scp ${workspaceFolder}/scripts/erase_remote.jlink ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/erase_remote.jlink && ssh ${config:remoteJLinkUser}@${config:remoteJLinkHost} \"JLinkExe -device ${input:targetDevice} -if SWD -speed 4000 -NoGui 1 -CommandFile /tmp/erase.jlink\""
+				"scp ${workspaceFolder}/scripts/erase_remote.jlink ${config:remoteJLinkUser}@${config:remoteJLinkHost}:/tmp/erase.jlink && ssh ${config:remoteJLinkUser}@${config:remoteJLinkHost} \"JLinkExe -device ${input:targetDevice} -if SWD -speed 4000 -NoGui 1 -CommandFile /tmp/erase.jlink\""
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
 			"group": "build",
-			"detail": "erase",
 			"problemMatcher": []
 		}
 	]

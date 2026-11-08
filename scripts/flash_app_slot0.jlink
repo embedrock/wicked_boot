@@ -1,0 +1,5 @@
+r
+h
+loadbin "samples/app_signed_uart_v1.bin", 0x08040000
+r
+q

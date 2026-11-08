@@ -1,7 +1,7 @@
 connect
 r
 h
-loadbin /tmp/image0.bin 0x08040000
+loadbin /tmp/image.bin 0x08040000
 r
 g
 q
