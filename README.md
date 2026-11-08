@@ -30,7 +30,7 @@ cmake --build --preset=stm32f4
 ```
 4. Flash the device. You can use any preferred flashing method compatible with your hardware setup (J-Link, ST-Link).
 Target binary: build/stm32f4/wicked_boot.bin
-
+5. WEB DFU: https://embedrock.github.io/wicked_boot/
 ## 🛠️ Hardware
 Tested on: **STM32F407VGT6** (Waveshare Core407V)
 
