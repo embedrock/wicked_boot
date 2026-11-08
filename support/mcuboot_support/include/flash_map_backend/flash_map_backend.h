@@ -114,7 +114,8 @@ uint32_t flash_area_align(const struct flash_area *area);
 int flash_area_get_sectors(int fa_id, uint32_t *count,
   struct flash_sector *sectors);
 
-//int flash_area_id_from_multi_image_slot(int image_index, int slot);
-//int flash_area_id_from_image_slot(int slot);
+int flash_area_id_from_multi_image_slot(int image_index, int slot);
+int flash_area_id_from_image_slot(int slot);
+uint8_t flash_area_erased_val(const struct flash_area *fap);
 
 #endif /* __FLASH_MAP_BACKEND_H__ */

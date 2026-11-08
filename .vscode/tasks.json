@@ -40,17 +40,7 @@
                 "uart_v2"
             ],
             "default": "uart_v1"
-        },
-		{
-			"id": "gdbMode",
-			"type": "pickString",
-			"description": "QEMU run mode",
-			"options": [
-				"-gdb tcp::1234 -S",
-				""
-			],
-			"default": ""
-		}
+        }
     ],
 	"tasks": [
 		{
@@ -69,7 +59,7 @@
 			"detail": "CMake template build task"
 		},
 		{
-            "label": "⚡ Flash (J-Link)(Win)",
+            "label": "(Win)⚡ Flash (J-Link)",
             "type": "shell",
             "command": "cmd",
             "args": [
@@ -83,7 +73,7 @@
             "problemMatcher": []
         },
         {
-            "label": "⚡ Flash Signed App (J-Link)(Win) - (STM32F407 only)",
+            "label": "(Win)⚡ Flash Signed App (J-Link) - (STM32F407 only)",
             "type": "shell",
             "command": "JLink.exe",
             "args": [
@@ -101,7 +91,7 @@
 			//"dependsOn": "1. Sign App for MCUboot"
         },
         {
-            "label": "🧹 Erase (J-Link)(Win)",
+            "label": "(Win)> Erase (J-Link)(Win)",
             "type": "shell",
             "command": "cmd",
             "args": [
@@ -112,7 +102,6 @@
                 "cwd": "${workspaceFolder}/build" 
             },
             "group": "build",
-            "detail": "Полная очистка flash-памяти выбранного MCU через J-Link",
             "problemMatcher": []
         },
 		{
@@ -126,7 +115,6 @@
 				"-gdb", "tcp::1234", "-S",        
 				"-kernel", "${command:cmake.launchTargetPath}",
 				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v1.bin,addr=0x08040000,force-raw=on",
-				"-device", "loader,file=/home/dev/samples/app_signed_qemu_v2.bin,addr=0x08080000,force-raw=on"
 			],
 			"isBackground": true,
 			"problemMatcher": {
@@ -209,7 +197,7 @@
 			"detail": "Listen remote console by running minicom",
 		},
 		{
-			"label": "⚡ Flash Remote Main",
+			"label": "⚡ Flash Main Remote",
 			"type": "shell",
 			"command": "sh",
 			"args": [
@@ -223,7 +211,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "⚡ Flash Remote Slot",
+			"label": "⚡ Flash Slot Remote",
 			"type": "shell",
 			"command": "sh",
 			"args": [

@@ -36,7 +36,6 @@ extern "C" {
 # define FLASH_AREA_IMAGE_PRIMARY(i) ((i == 0) ? 1 : 255)
 # define FLASH_AREA_IMAGE_SECONDARY(i) ((i == 0) ? 2 : 255)
 
-
 #ifdef __cplusplus
 }
 #endif
