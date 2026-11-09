@@ -1,4 +1,4 @@
-name: QEMU Tests
+name: Tests
 
 on:
   push:
@@ -25,11 +25,15 @@ jobs:
         run: cmake --build --preset host-test
 
       - name: Run tests
-        run: ctest --test-dir build/host-test --output-on-failure --output-junit build/host-test/test-results.xml
+        run: ctest --test-dir build/host-test --output-on-failure --output-junit ${{ github.workspace }}/build/host-test/test-results.xml
 
       - name: Debug - check generated files
         if: success() || failure()
-        run: ls -la build/host-test/
+        run: |
+          echo "=== Содержимое папки сборки ==="
+          ls -la build/host-test/
+          echo "=== Ищем любые .xml файлы во всем репозитории (на всякий случай) ==="
+          find ${{ github.workspace }} -name "*.xml"
 
       - name: Publish Test Report
         if: success() || failure()
