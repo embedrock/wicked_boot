@@ -67,6 +67,17 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
+        },
+        {
+            "name": "host-test",
+            "displayName": "Host Unit Tests",
+            "description": "build Unit-tests for host (without ARM crosscompile)",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "BUILD_TESTS": "ON",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
         }
     ],
     "buildPresets": [
@@ -89,6 +100,10 @@
         {
             "name": "stm32f7-release",
             "configurePreset": "stm32f7-release"
+        },
+        {
+            "name": "host-test",
+            "configurePreset": "host-test"
         }
     ]
 }

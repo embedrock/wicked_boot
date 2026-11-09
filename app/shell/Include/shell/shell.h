@@ -2,6 +2,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct ShellCommand {
   const char *command;
   int (*handler)(int argc, char *argv[]);
@@ -27,3 +31,7 @@ int shell_help_handler(int argc, char *argv[]);
 
 //! Prints a line then a newline
 void shell_put_line(const char *str);
+
+#ifdef __cplusplus
+}
+#endif
