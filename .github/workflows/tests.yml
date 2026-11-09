@@ -27,6 +27,10 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build/host-test --output-on-failure --output-junit build/host-test/test-results.xml
 
+      - name: Debug - check generated files
+        if: success() || failure()
+        run: ls -la build/host-test/
+
       - name: Publish Test Report
         if: success() || failure()
         uses: dorny/test-reporter@v1
