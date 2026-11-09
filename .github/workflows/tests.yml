@@ -33,7 +33,7 @@ jobs:
         with:
           name: Host Unit Tests Report
           path: build/host-test/test-results.xml
-          reporter: ctest
+          reporter: java-junit
 
   qemu-tests:
     runs-on: ubuntu-latest
