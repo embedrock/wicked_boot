@@ -1,11 +1,11 @@
 # Wicked Boot
 [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com)
 
-[![Build Status](https://github.com/EvgeniyGA/wicked_boot/actions/workflows/build-all.yml/badge.svg)](https://github.com/EvgeniyGA/wicked_boot/actions/workflows/build-all.yml)
-[![Tests Status](https://github.com/EvgeniyGA/wicked_boot/actions/workflows/qemu-tests.yml/badge.svg)](https://github.com/EvgeniyGA/wicked_boot/actions/workflows/qemu-tests.yml)
-[![Latest Release](https://img.shields.io/github/v/release/EvgeniyGA/wicked_boot?label=release)](https://github.com/EvgeniyGA/wicked_boot/releases)
+[![Build Status](https://github.com/embedrock/wicked_boot/actions/workflows/build-all.yml/badge.svg)](https://github.com/embedrock/wicked_boot/actions/workflows/build-all.yml)
+[![Tests Status](https://github.com/embedrock/wicked_boot/actions/workflows/tests.yml/badge.svg)](https://github.com/embedrock/wicked_boot/actions/workflows/tests.yml)
+[![Latest Release](https://img.shields.io/github/v/release/embedrock/wicked_boot?label=release)](https://github.com/embedrock/wicked_boot/releases)
 ![MCUboot](https://img.shields.io/badge/MCUboot-v1.7.2-blue)
-[![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/EvgeniyGA/wicked_boot/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://github.com/embedrock/wicked_boot/blob/main/LICENSE)
 
 Modern, lightweight bootloader for STM32 microcontrollers, based on [MCUboot](https://www.mcuboot.com/). Designed for secure updates and easy remote debugging.
 This project incorporates configuration files and build scripts adapted from the official [STMicroelectronics stm32-mw-mcuboot](https://github.com/STMicroelectronics/stm32-mw-mcuboot) repository.
@@ -19,7 +19,7 @@ This project incorporates configuration files and build scripts adapted from the
 ## 🚀 Quick Start
 1. Clone the repository:
 ```bash
-git clone --recursive https://github.com/EvgeniyGA/wicked_boot.git
+git clone --recursive https://github.com/embedrock/wicked_boot.git
 cd wicked_boot
 git submodule update --init --recursive
 ```

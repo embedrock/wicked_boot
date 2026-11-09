@@ -7,7 +7,35 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+
+  host-tests:
+    name: Host Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build g++
+
+      - name: Configure CMake
+        run: cmake --preset host-test
+
+      - name: Build tests
+        run: cmake --build --preset host-test
+
+      - name: Run tests
+        run: ctest --test-dir build/host-test --output-on-failure --output-junit build/host-test/test-results.xml
+
+      - name: Publish Test Report
+        if: success() || failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Host Unit Tests Report
+          path: build/host-test/test-results.xml
+          reporter: ctest
+
+  qemu-tests:
     runs-on: ubuntu-latest
     
     steps:
