@@ -87,6 +87,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       
       - name: Clean build for stm32f4-debug
         run: docker compose run --rm stm32-dev rm -rf build/stm32f4-debug
