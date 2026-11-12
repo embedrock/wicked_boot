@@ -109,7 +109,7 @@ jobs:
   test-hil:
     name: HIL Tests (Real Hardware)
     needs: build-stm32f4
-    runs-on: [self-hosted, hil, stm32f4]
+    runs-on: [self-hosted, hil]
     
     steps:
       - name: Checkout code
