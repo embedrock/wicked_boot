@@ -121,10 +121,10 @@ jobs:
           name: stm32f4-firmware
           path: build/stm32f4-debug/
 
-      - name: Install Python dependencies
-        run: |
-          sudo apt update
-          sudo apt install python3-pytest python3-serial -y
+      # - name: Install Python dependencies <- you have to run it manually
+      #   run: |
+      #     sudo apt update
+      #     sudo apt install python3-pytest python3-serial -y
 
       - name: Run HIL Tests
         run: |
