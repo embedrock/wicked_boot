@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../scripts")))
-from flasher import flash_jlink
+from flasher import flash_jlink, erase_jlink
 
 def pytest_addoption(parser):
     parser.addoption("--target", action="store", default="qemu", choices=["qemu", "hil"], help="Target platform: qemu or hil (real hardware)")
