@@ -30,9 +30,9 @@ jobs:
       - name: Debug - check generated files
         if: success() || failure()
         run: |
-          echo "=== Содержимое папки сборки ==="
+          echo "=== Contain of ==="
           ls -la build/host-test/
-          echo "=== Ищем любые .xml файлы во всем репозитории (на всякий случай) ==="
+          echo "=== find any .xml ==="
           find ${{ github.workspace }} -name "*.xml"
 
       - name: Publish Test Report
