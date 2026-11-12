@@ -8,9 +8,12 @@ import re
 from pathlib import Path
 
 def pytest_addoption(parser):
-    parser.addoption("--fw-image", type=str, 
-        default="build/qemu-f4/wicked_boot.elf",
-        help="firmware binary to program to device")
+    parser.addoption("--fw-image", type=str, action="store", default="build/qemu-f4/wicked_boot.elf", help="firmware binary to program to device")
+    parser.addoption("--port", type=str, action="store", default="/dev/ttyUSB0", help="UART port")
+
+@pytest.fixture(scope="session")
+def port(request):
+    return request.config.getoption("--port")
 
 @pytest.fixture(scope="session")
 def fw_image(request):
