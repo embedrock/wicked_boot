@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y \
     python3-cryptography \
     python3-intelhex \
     python3-click \
+    python3-serial \
     netcat-openbsd \
     minicom \
     -y
