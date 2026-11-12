@@ -7,3 +7,4 @@ targets/stm32f4/gas-lighter-f4 Debug.launch
 /test/pytest/__pycache__
 /targets/stm32h7/Debug
 .DS_Store
+/scripts/__pycache__

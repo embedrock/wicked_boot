@@ -2,11 +2,15 @@
 import pytest
 import subprocess
 import time
+import sys
 import os
 import serial
 import shutil
 import re
 from pathlib import Path
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../scripts")))
+from flasher import flash_jlink
 
 def pytest_addoption(parser):
     parser.addoption("--target", action="store", default="qemu", choices=["qemu", "hil"], help="Target platform: qemu or hil (real hardware)")
@@ -61,25 +65,20 @@ class QemuBoard:
             self.process.wait()
 
 class STM32Board:
-    def __init__(self, port, baud, fw_image):
+    def __init__(self, port, baud, fw_image, erase_first=True):
         self.port = port
         self.baud = baud
         self.fw_image = fw_image
-        self._flash_device(fw_image)
-        #self.serial_device = serial.Serial(port, baud, timeout=1, write_timeout=1)
+        
+        if erase_first:
+            print("🧹 Erasing chip before flashing...")
+            erase_jlink(device="STM32F407VG", speed=4000)
+        flash_jlink(fw_image, device="STM32F407VG", speed=4000)
+        
+        self.serial_device = serial.Serial(port, baud, timeout=1, write_timeout=1)
         time.sleep(1.5)
-        #self.serial_device.reset_input_buffer()
+        self.serial_device.reset_input_buffer()
 
-    def _flash_device(self, fw_image):
-        print(f"\n🔄 Flashing {fw_image}...")
-        # cmd = [
-        #     "openocd", "-f", "interface/stlink.cfg", "-f", "target/stm32f4x.cfg",
-        #     "-c", f"program {os.path.abspath(fw_image)} verify reset exit"
-        # ]
-        # result = subprocess.run(cmd, capture_output=True, text=True)
-        # if result.returncode != 0:
-        #     print("❌ OpenOCD Error:\n", result.stderr)
-        #     raise RuntimeError("Flashing failed")
         print("✅ Flashing successful!\n")
 
     def wait_for_regex_in_line(self, regex, timeout_s=5):
@@ -97,7 +96,6 @@ class STM32Board:
 
 @pytest.fixture(scope="session")
 def board(target, port, fw_image, request):
-    # Получаем метки текущего теста
     test_markers = [marker.name for marker in request.node.iter_markers()]
     
     # Проверяем совместимость
