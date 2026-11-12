@@ -70,14 +70,13 @@ class STM32Board:
         self.baud = baud
         self.fw_image = fw_image
         
+        self.serial_device = serial.Serial(port, baud, timeout=1, write_timeout=1)
+        self.serial_device.reset_input_buffer()
+        
         if erase_first:
             print("🧹 Erasing chip before flashing...")
             erase_jlink(device="STM32F407VG", speed=4000)
         flash_jlink(fw_image, device="STM32F407VG", speed=4000)
-        
-        self.serial_device = serial.Serial(port, baud, timeout=1, write_timeout=1)
-        time.sleep(1.5)
-        self.serial_device.reset_input_buffer()
 
         print("✅ Flashing successful!\n")
 
