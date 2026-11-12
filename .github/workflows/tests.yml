@@ -82,3 +82,51 @@ jobs:
             build/test-results.xml
             build/qemu_serial.txt
           retention-days: 7
+
+  build-stm32f4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Clean build for stm32f4-debug
+        run: docker compose run --rm stm32-dev rm -rf build/stm32f4-debug
+
+      - name: Configure CMake (stm32f4-debug)
+        run: docker compose run --rm stm32-dev cmake --preset stm32f4-debug
+
+      - name: Build firmware (stm32f4-debug)
+        run: docker compose run --rm stm32-dev cmake --build --preset stm32f4-debug
+
+      - name: Upload STM32F4 Firmware Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32f4-firmware  
+          path: build/stm32f4-debug/wicked_boot.bin
+          if-no-files-found: error
+
+  test-hil:
+    name: HIL Tests (Real Hardware)
+    needs: build-stm32f4
+    runs-on: [self-hosted, hil, stm32f4]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download built firmware
+        uses: actions/download-artifact@v4
+        with:
+          name: stm32f4-firmware
+          path: build/stm32f4-debug/
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install pytest pyserial
+
+      - name: Run HIL Tests
+        run: |
+          echo "🚀 Starting HIL tests..."
+          # Запускаем pytest, фильтруя только тесты с меткой hil_only
+          # Путь к файлу теперь указывает на скачанный артефакт
+          pytest test/pytest/ -m hil_only --target=hil --port /dev/ttyUSB0 --fw-image build/stm32f4-debug/wicked_boot.bin -v -s

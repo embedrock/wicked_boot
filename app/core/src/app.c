@@ -101,7 +101,7 @@ void setup(void){
 
     msg.line = 1;
     msg.offset = 1;
-    strcpy(msg.data, "loading..");
+    strcpy(msg.data, "loading.....");
     LCD_SetCursor(&hlcd1, msg.line, msg.offset);
     LCD_SendString(&hlcd1, msg.data);
 #endif
