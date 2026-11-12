@@ -81,7 +81,7 @@ class STM32Board:
 
         print("✅ Flashing successful!\n")
 
-    def wait_for_regex_in_line(self, regex, timeout_s=5):
+    def wait_for_regex_in_file(self, regex, timeout_s=5):
         start_time = time.time()
         while True:
             line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
