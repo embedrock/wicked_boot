@@ -104,7 +104,7 @@ def erase_jlink(device: str = "STM32F407VG", speed: int = 4000):
             
     print("✅ Erase successful!")
     
-def flash_app_slot(slot: int, fw_image: str, device: str = "STM32F407VG", speed: int = 4000):
+def flash_app_slot(slot: int, fw_image: str, device: str = "STM32F407VG", speed: int = 4000, reset_after: bool = True):
     """
     Прошивает подписанное приложение в указанный слот (0 или 1) через J-Link.
     """
@@ -125,9 +125,12 @@ def flash_app_slot(slot: int, fw_image: str, device: str = "STM32F407VG", speed:
     }
     target_addr = addresses[slot]
 
-    # Команды: Halt, Load Binary по нужному адресу, Reset, Go, Quit
-    # Это точный аналог того, что делают твои .jlink скрипты, но с абсолютным путем
-    jlink_commands = f"h\nloadbin {abs_fw_image} {target_addr}\nr\ng\nq\n"
+    if reset_after:
+        # Halt, Write, Reset, Go, Quit (Стандартное поведение)
+        jlink_commands = f"h\nloadbin {abs_fw_image} {target_addr}\nr\ng\nq\n"
+    else:
+        # Halt, Write, Quit (Без перезагрузки! МК останется в том состоянии, в котором был, или остановлен)
+        jlink_commands = f"h\nloadbin {abs_fw_image} {target_addr}\nq\n"
     
     cmd = [
         jlink_exe,
