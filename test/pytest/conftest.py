@@ -84,7 +84,7 @@ class STM32Board:
         flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
         print("✅ Flashing slot2 successful!\n")
 
-    def wait_for_regex_in_file(self, regex, timeout_s=10, drain_time_s=3):
+    def wait_for_regex_in_file(self, regex, timeout_s=15, drain_time_s=14):
         """
         Читает UART, ищет regex. После нахождения продолжает читать и печатать 
         вывод в течение drain_time_s секунд, чтобы в CI попали полные логи загрузки.
