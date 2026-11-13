@@ -80,9 +80,18 @@ class STM32Board:
 
         print("✅ Flashing successful!\n")
         
-        print("flashing slot2!\n")
-        flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
-        print("✅ Flashing slot2 successful!\n")
+        #print("flashing slot2!\n")
+        #flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
+        #print("✅ Flashing slot2 successful!\n")
+        
+    def flash_slot(self, slot: int, fw_image: str):
+        """Прошивает конкретный слот во время выполнения теста"""
+        print(f"\n🔄 [TEST ACTION] Flashing Slot {slot} with {fw_image}...")
+        flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
+        print("✅ [TEST ACTION] Slot flashing complete!\n")
+        
+        # Опционально: можно добавить сюда time.sleep(1) или сброс буфера, 
+        # если после прошивки слота плата сразу ребутится и начинает писать в UART
 
     def wait_for_regex_in_file(self, regex, timeout_s=15, drain_time_s=14):
         """

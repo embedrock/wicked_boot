@@ -1,7 +1,12 @@
 import pytest
+import os
 
 @pytest.mark.hil_only
 def test_updating_primary_slot(board):
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+    app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
+    
+    board.flash_slot(slot=1, fw_image=app_v2_path)
     # 1. Считываем 20 секунд вывода (этого более чем достаточно для загрузки MCUboot)
     uart_log = board.capture_uart_output(duration_s=20)
     
