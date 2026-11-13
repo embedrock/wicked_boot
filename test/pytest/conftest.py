@@ -84,18 +84,35 @@ class STM32Board:
         flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
         print("✅ Flashing slot2 successful!\n")
 
-    def wait_for_regex_in_file(self, regex, timeout_s=5):
+    def wait_for_regex_in_file(self, regex, timeout_s=10, drain_time_s=3):
+        """
+        Читает UART, ищет regex. После нахождения продолжает читать и печатать 
+        вывод в течение drain_time_s секунд, чтобы в CI попали полные логи загрузки.
+        """
         start_time = time.time()
+        found_time = None
+        
         while True:
+            # read_until() будет ждать появления \n или истечения timeout=1 (из __init__)
             line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
+            
             if line != "":
                 print(f"   [UART] {line}")
             
-            if re.search(regex, line):
-                return True
-                
-            if time.time() - start_time > timeout_s:
-                raise RuntimeError(f"Timeout waiting for regex: {regex}")
+            # 1. Если еще не нашли, проверяем на совпадение
+            if found_time is None and re.search(regex, line):
+                found_time = time.time()
+                print(f"   [UART] ✅ MATCH FOUND: '{regex}'. Continuing to drain UART for {drain_time_s}s...")
+            
+            # 2. Если уже нашли, проверяем, прошло ли достаточно времени для "долива" (drain)
+            if found_time is not None:
+                if time.time() - found_time >= drain_time_s:
+                    print("   [UART] ✅ Drain complete. Test passed successfully.")
+                    return True
+            
+            # 3. Если не нашли и вышло общее время ожидания — падаем с ошибкой
+            if found_time is None and (time.time() - start_time > timeout_s):
+                raise RuntimeError(f"Timeout ({timeout_s}s) waiting for regex: {regex}")
 
 @pytest.fixture(scope="session")
 def board(target, port, fw_image, request):
