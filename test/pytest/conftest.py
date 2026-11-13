@@ -77,12 +77,6 @@ class STM32Board:
             print("🧹 Erasing chip before flashing...")
             erase_jlink(device="STM32F407VG", speed=4000)
         flash_jlink(fw_image, device="STM32F407VG", speed=4000)
-
-        print("✅ Flashing successful!\n")
-        
-        #print("flashing slot2!\n")
-        #flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
-        #print("✅ Flashing slot2 successful!\n")
         
     def flash_slot(self, slot: int, fw_image: str):
         """Прошивает конкретный слот во время выполнения теста"""
