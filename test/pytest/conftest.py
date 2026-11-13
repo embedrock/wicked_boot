@@ -90,14 +90,14 @@ class STM32Board:
     
     def reboot(self, wait_s=1.0):
         """
-        Аппаратно перезагружает плату через J-Link и очищает буфер UART,
-        чтобы следующий вызов capture_uart_output читал только новый лог загрузки.
+        reboot mcu via J-Link and clean UART buffer,
         """
         print("\n🔄 [TEST ACTION] Rebooting device via J-Link...")
         reboot_jlink(device="STM32F407VG", speed=4000)
         self.serial_device.reset_input_buffer()
-        print("✅ Reboot complete, UART buffer cleared. Awaiting {wait_s} seconds\n")
+        print(f"✅ Reboot complete, UART buffer cleared. Awaiting {wait_s} seconds\n")
         time.sleep(wait_s)
+        return True
     
     def wait_for_regex_in_file(self, regex, timeout_s=15):
         """

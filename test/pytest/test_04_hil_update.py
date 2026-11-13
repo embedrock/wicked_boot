@@ -21,7 +21,7 @@ def test_load_image_in_primary_slot(board):
     
     board.reboot(wait_s=5.0)
     
-    #uart_log = board.capture_uart_output(duration_s=20)
+    uart_log = board.capture_uart_output(duration_s=20)
     
     #assert "Bootloader Version:" in uart_log, "Ожидалось 'Bootloader Version:' после запуска"
     assert "Firmware version: 0.1.0" in uart_log, "Ожидалось 'Firmware version: 0.1.0'"
