@@ -89,40 +89,24 @@ class STM32Board:
         print(f"\n🔄 [TEST ACTION] Flashing Slot {slot} with {fw_image}...")
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
         print("✅ [TEST ACTION] Slot flashing complete!\n")
-        
-        # Опционально: можно добавить сюда time.sleep(1) или сброс буфера, 
-        # если после прошивки слота плата сразу ребутится и начинает писать в UART
 
-    def wait_for_regex_in_file(self, regex, timeout_s=15, drain_time_s=14):
+    def wait_for_regex_in_file(self, regex, timeout_s=15):
         """
-        Читает UART, ищет regex. После нахождения продолжает читать и печатать
-        вывод в течение drain_time_s секунд. Использует буфер, чтобы строки,
-        прочитанные во время drain, были доступны для последующих вызовов.
+        Читает UART, ищет regex. Как только находит — возвращается.
+        Если не находит за timeout_s секунд — падает с ошибкой.
         """
         start_time = time.time()
-        found_time = None
-        buffer = ""  # Накопительный буфер всего вывода
         
         while True:
             line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
             
             if line != "":
                 print(f"   [UART] {line}")
-                buffer += line + "\n"  # Добавляем в буфер
             
-            # 1. Если еще не нашли, проверяем на совпадение
-            if found_time is None and re.search(regex, buffer):
-                found_time = time.time()
-                print(f"   [UART] ✅ MATCH FOUND: '{regex}'. Continuing to drain UART for {drain_time_s}s...")
+            if re.search(regex, line):
+                return True
             
-            # 2. Если уже нашли, проверяем, прошло ли достаточно времени для "долива"
-            if found_time is not None:
-                if time.time() - found_time >= drain_time_s:
-                    print("   [UART] ✅ Drain complete. Test passed successfully.")
-                    return True
-            
-            # 3. Если не нашли и вышло общее время ожидания — падаем с ошибкой
-            if found_time is None and (time.time() - start_time > timeout_s):
+            if time.time() - start_time > timeout_s:
                 raise RuntimeError(f"Timeout ({timeout_s}s) waiting for regex: {regex}")
         
     def capture_uart_output(self, duration_s=20):
