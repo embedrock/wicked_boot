@@ -69,7 +69,7 @@ jobs:
 
       - name: Run pytest in Docker
         run: |
-          docker compose run --rm stm32-dev pytest \
+          docker compose run --rm stm32-dev pytest -m qemu_only --target=qemu --fw-image build/qemu-f4/wicked_boot.elf \
             --junitxml=build/test-results.xml \
             -v
 
