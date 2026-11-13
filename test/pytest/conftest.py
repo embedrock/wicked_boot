@@ -82,6 +82,11 @@ class STM32Board:
         """flashing slot during test"""
         print(f"\n🔄 Flashing Slot {slot} with {fw_image}...")
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
+    
+    def flash_slot_no_reset(self, slot: int, fw_image: str):
+        """flashing slot during test withon reboot"""
+        print(f"\n🔄 Flashing Slot {slot} with {fw_image} (NO RESET)...")
+        flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
 
     def wait_for_regex_in_file(self, regex, timeout_s=15):
         """
