@@ -44,10 +44,10 @@ class QemuBoard:
             #"-gdb", "tcp::1234",
             "-kernel", self.fw_image
         ])
-        time.sleep(1) # Даем QEMU секунду на старт
+        time.sleep(1)
     
     def wait_for_regex_in_file(self, regex, timeout_s=5):
-        """Аналог wait_for_regex_in_line, но читает из файла QEMU"""
+        """Analog of wait_for_regex_in_line, but read from QEMU log"""
         start_time = time.time()
         with open(self.serial_file, "r") as f:
             while time.time() - start_time < timeout_s:
@@ -79,15 +79,13 @@ class STM32Board:
         flash_jlink(fw_image, device="STM32F407VG", speed=4000)
         
     def flash_slot(self, slot: int, fw_image: str):
-        """Прошивает конкретный слот во время выполнения теста"""
-        print(f"\n🔄 [TEST ACTION] Flashing Slot {slot} with {fw_image}...")
+        """flashing slot during test"""
+        print(f"\n🔄 Flashing Slot {slot} with {fw_image}...")
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
-        print("✅ [TEST ACTION] Slot flashing complete!\n")
 
     def wait_for_regex_in_file(self, regex, timeout_s=15):
         """
-        Читает UART, ищет regex. Как только находит — возвращается.
-        Если не находит за timeout_s секунд — падает с ошибкой.
+        Waiting for regex timeout_s seconds
         """
         start_time = time.time()
         
@@ -95,7 +93,7 @@ class STM32Board:
             line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
             
             if line != "":
-                print(f"   [UART] {line}")
+                print(f"          {line}")
             
             if re.search(regex, line):
                 return True
@@ -105,39 +103,33 @@ class STM32Board:
         
     def capture_uart_output(self, duration_s=20):
         """
-        Читает UART заданное количество секунд, печатает строки в консоль 
-        и возвращает весь накопленный текст. Идеально для проверки boot sequence.
+        Dump all uart data
         """
         start_time = time.time()
-        full_output = ""
+        output = ""
         
-        print(f"   [UART] 📡 Capturing UART output for {duration_s} seconds...")
-        
-        # 1. Сохраняем текущий таймаут и ставим короткий (0.5 сек), 
-        # чтобы цикл не зависал, если плата внезапно замолчит.
+        print(f"          📡 Capturing UART output for {duration_s} seconds...")
         original_timeout = self.serial_device.timeout
         self.serial_device.timeout = 0.5 
         
         try:
             while time.time() - start_time < duration_s:
-                # read_until() автоматически использует self.serial_device.timeout
+                # read_until() uses self.serial_device.timeout automaticly
                 line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
                 
                 if line != "":
-                    print(f"   [UART] {line}")
-                    full_output += line + "\n"
+                    print(f"          {line}")
+                    output += line
         finally:
-            # 2. Гарантированно возвращаем исходный таймаут, даже если тест упадет
             self.serial_device.timeout = original_timeout
             
-        print("   [UART] ✅ Capture complete.")
-        return full_output
+        print("          ✅ Capture complete.")
+        return output
 
 @pytest.fixture(scope="function")
 def board(target, port, fw_image, request):
     test_markers = [marker.name for marker in request.node.iter_markers()]
     
-    # Проверяем совместимость
     if "hil_only" in test_markers and target != "hil":
         pytest.skip(f"Test {request.node.name} requires HIL target")
     if "qemu_only" in test_markers and target != "qemu":
