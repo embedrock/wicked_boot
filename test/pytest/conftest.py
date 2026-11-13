@@ -95,11 +95,9 @@ class STM32Board:
         """
         print("\n🔄 [TEST ACTION] Rebooting device via J-Link...")
         reboot_jlink(device="STM32F407VG", speed=4000)
-        
-        time.sleep(wait_s)
-        
         self.serial_device.reset_input_buffer()
-        print("✅ [TEST ACTION] Reboot complete, UART buffer cleared.\n")
+        print("✅ Reboot complete, UART buffer cleared. Awaiting {wait_s} seconds\n")
+        time.sleep(wait_s)
     
     def wait_for_regex_in_file(self, regex, timeout_s=15):
         """
