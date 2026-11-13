@@ -115,6 +115,27 @@ class STM32Board:
             # 3. Если не нашли и вышло общее время ожидания — падаем с ошибкой
             if found_time is None and (time.time() - start_time > timeout_s):
                 raise RuntimeError(f"Timeout ({timeout_s}s) waiting for regex: {regex}")
+        
+    def capture_uart_output(self, duration_s=20):
+        """
+        Читает UART заданное количество секунд, печатает строки в консоль 
+        и возвращает весь накопленный текст. Идеально для проверки boot sequence.
+        """
+        start_time = time.time()
+        full_output = ""
+        
+        print(f"   [UART] 📡 Capturing UART output for {duration_s} seconds...")
+        
+        while time.time() - start_time < duration_s:
+            # Используем короткий таймаут, чтобы цикл не зависал, если данных нет
+            line = self.serial_device.read_until(timeout=0.5).decode('utf-8', errors='replace').replace("\r\n", "")
+            
+            if line != "":
+                print(f"   [UART] {line}")
+                full_output += line + "\n"
+                
+        print("   [UART] ✅ Capture complete.")
+        return full_output
 
 @pytest.fixture(scope="function")
 def board(target, port, fw_image, request):
