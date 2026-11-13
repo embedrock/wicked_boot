@@ -126,14 +126,23 @@ class STM32Board:
         
         print(f"   [UART] 📡 Capturing UART output for {duration_s} seconds...")
         
-        while time.time() - start_time < duration_s:
-            # Используем короткий таймаут, чтобы цикл не зависал, если данных нет
-            line = self.serial_device.read_until(timeout=0.5).decode('utf-8', errors='replace').replace("\r\n", "")
-            
-            if line != "":
-                print(f"   [UART] {line}")
-                full_output += line + "\n"
+        # 1. Сохраняем текущий таймаут и ставим короткий (0.5 сек), 
+        # чтобы цикл не зависал, если плата внезапно замолчит.
+        original_timeout = self.serial_device.timeout
+        self.serial_device.timeout = 0.5 
+        
+        try:
+            while time.time() - start_time < duration_s:
+                # read_until() автоматически использует self.serial_device.timeout
+                line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
                 
+                if line != "":
+                    print(f"   [UART] {line}")
+                    full_output += line + "\n"
+        finally:
+            # 2. Гарантированно возвращаем исходный таймаут, даже если тест упадет
+            self.serial_device.timeout = original_timeout
+            
         print("   [UART] ✅ Capture complete.")
         return full_output
 
