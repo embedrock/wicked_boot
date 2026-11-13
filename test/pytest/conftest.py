@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../scripts")))
-from flasher import flash_jlink, erase_jlink
+from flasher import flash_jlink, erase_jlink, flash_app_slot
 
 def pytest_addoption(parser):
     parser.addoption("--target", action="store", default="qemu", choices=["qemu", "hil"], help="Target platform: qemu or hil (real hardware)")
@@ -79,6 +79,10 @@ class STM32Board:
         flash_jlink(fw_image, device="STM32F407VG", speed=4000)
 
         print("✅ Flashing successful!\n")
+        
+        print("flashing slot2!\n")
+        flash_app_slot(slot=1, fw_image="samples/app_signed_uart_v2.bin", device="STM32F407VG")
+        print("✅ Flashing slot2 successful!\n")
 
     def wait_for_regex_in_file(self, regex, timeout_s=5):
         start_time = time.time()

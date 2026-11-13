@@ -103,6 +103,64 @@ def erase_jlink(device: str = "STM32F407VG", speed: int = 4000):
             raise RuntimeError(f"Failed to erase device. Exit code: {result.returncode}")
             
     print("✅ Erase successful!")
+    
+def flash_app_slot(slot: int, fw_image: str, device: str = "STM32F407VG", speed: int = 4000):
+    """
+    Прошивает подписанное приложение в указанный слот (0 или 1) через J-Link.
+    """
+    if slot not in (0, 1):
+        raise ValueError("Slot must be 0 or 1")
+
+    print(f"🔄 Flashing App to Slot {slot}: {fw_image}...")
+    
+    jlink_exe = get_jlink_executable()
+    # J-Link предпочитает прямые слеши даже на Windows
+    abs_fw_image = Path(fw_image).resolve().as_posix() 
+    
+    # ⚠️ ВАЖНО: Проверь эти адреса в своих файлах flash_app_slot0.jlink и flash_app_slot1.jlink!
+    # Обычно для STM32F4 и MCUboot это 0x08040000 и 0x08080000, но лучше перепроверить.
+    addresses = {
+        0: "0x08040000",
+        1: "0x08080000"
+    }
+    target_addr = addresses[slot]
+
+    # Команды: Halt, Load Binary по нужному адресу, Reset, Go, Quit
+    # Это точный аналог того, что делают твои .jlink скрипты, но с абсолютным путем
+    jlink_commands = f"h\nloadbin {abs_fw_image} {target_addr}\nr\ng\nq\n"
+    
+    cmd = [
+        jlink_exe,
+        "-device", device,
+        "-if", "SWD",
+        "-speed", str(speed),
+        "-NoGui", "1"
+    ]
+    
+    try:
+        result = subprocess.run(
+            cmd,
+            input=jlink_commands,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+    except FileNotFoundError:
+        raise RuntimeError(f"❌ Не удалось запустить {jlink_exe}.")
+    
+    if result.returncode != 0:
+        print("❌ J-Link Slot Flashing Error:")
+        print(result.stderr)
+        if result.stdout:
+            print("📄 J-Link Output:")
+            print(result.stdout)
+        
+        if __name__ == "__main__":
+            sys.exit(1)
+        else:
+            raise RuntimeError(f"Failed to flash slot {slot}. Exit code: {result.returncode}")
+    
+    print(f"✅ App successfully flashed to Slot {slot}!")
 
 # ===== CLI Интерфейс (запуск напрямую из терминала) =====
 if __name__ == "__main__":
@@ -141,6 +199,28 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"❌ Fatal error: {e}")
             sys.exit(1)
+
+    elif action == "flash-slot":
+        if len(sys.argv) < 4:
+            print("❌ Error: Missing arguments for 'flash-slot'.")
+            print("Usage: python scripts/flasher.py flash-slot <0|1> <path_to_bin>")
+            sys.exit(1)
+            
+        slot_num = int(sys.argv[2])
+        fw_file = sys.argv[3]
+        dev = sys.argv[4] if len(sys.argv) > 4 else "STM32F407VG"
+        spd = int(sys.argv[5]) if len(sys.argv) > 5 else 4000
+        
+        if not os.path.exists(fw_file):
+            print(f"❌ File not found: {fw_file}")
+            sys.exit(1)
+            
+        try:
+            flash_app_slot(slot_num, fw_file, device=dev, speed=spd)
+        except Exception as e:
+            print(f"❌ Fatal error: {e}")
+            sys.exit(1)
+
     else:
-        print(f"❌ Unknown action: {action}. Use 'flash' or 'erase'.")
+        print(f"❌ Unknown action: {action}. Use 'flash', 'erase', or 'flash-slot'.")
         sys.exit(1)
