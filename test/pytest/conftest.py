@@ -143,6 +143,33 @@ class STM32Board:
             
         print("          ✅ Capture complete.")
         return output
+    
+    def send_byte(self, byte_data):
+        """Отправляет один байт в UART"""
+        if isinstance(byte_data, str):
+            byte_data = byte_data.encode('utf-8')
+        self.serial_device.write(byte_data)
+        # Небольшая пауза, чтобы устройство успело обработать
+        time.sleep(0.05)
+    
+    def send_command(self, command: str, wait_for_response_s=2):
+        """
+        Отправляет команду (строку) в UART и возвращает ответ устройства.
+        Автоматически добавляет \n в конец команды.
+        """
+        print(f"   [UART] ➡️ Sending command: '{command}'")
+        
+        # Очищаем буфер от возможных "хвостов"
+        self.serial_device.reset_input_buffer()
+        
+        # Отправляем команду с переносом строки
+        self.serial_device.write((command + "\n").encode('utf-8'))
+        
+        # Ждем и читаем ответ
+        response = self.capture_uart_output(duration_s=wait_for_response_s)
+        
+        print(f"   [UART] ✅ Command sent, response captured.")
+        return response
 
 @pytest.fixture(scope="function")
 def board(target, port, fw_image, request):
