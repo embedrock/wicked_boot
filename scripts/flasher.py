@@ -165,6 +165,47 @@ def flash_app_slot(slot: int, fw_image: str, device: str = "STM32F407VG", speed:
     
     print(f"✅ App successfully flashed to Slot {slot}!")
 
+def reboot_jlink(device: str = "STM32F407VG", speed: int = 4000):
+    """
+    Выполняет аппаратный сброс (Reset) микроконтроллера через J-Link.
+    Идеально для HIL-тестов, когда нужно перезагрузить плату после прошивки слотов.
+    """
+    print(f"🔄 Rebooting device via J-Link (Device: {device})...")
+    
+    jlink_exe = get_jlink_executable()
+    
+    # Команды: Halt, Reset, Go, Quit
+    jlink_commands = "h\nr\ng\nq\n"
+    
+    cmd = [
+        jlink_exe,
+        "-device", device,
+        "-if", "SWD",
+        "-speed", str(speed),
+        "-NoGui", "1"
+    ]
+    
+    try:
+        result = subprocess.run(
+            cmd,
+            input=jlink_commands,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+    except FileNotFoundError:
+        raise RuntimeError(f"❌ Не удалось запустить {jlink_exe}.")
+    
+    if result.returncode != 0:
+        print("❌ J-Link Reboot Error:")
+        print(result.stderr)
+        if __name__ == "__main__":
+            sys.exit(1)
+        else:
+            raise RuntimeError(f"Failed to reboot device. Exit code: {result.returncode}")
+            
+    print("✅ Reboot successful!")
+
 # ===== CLI Интерфейс (запуск напрямую из терминала) =====
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -224,6 +265,15 @@ if __name__ == "__main__":
             print(f"❌ Fatal error: {e}")
             sys.exit(1)
 
+    elif action == "reboot":
+        dev = sys.argv[2] if len(sys.argv) > 2 else "STM32F407VG"
+        spd = int(sys.argv[3]) if len(sys.argv) > 3 else 4000
+        try:
+            reboot_jlink(device=dev, speed=spd)
+        except Exception as e:
+            print(f"❌ Fatal error: {e}")
+            sys.exit(1)
+            
     else:
-        print(f"❌ Unknown action: {action}. Use 'flash', 'erase', or 'flash-slot'.")
+        print(f"❌ Unknown action: {action}. Use 'flash', 'erase', 'flash-slot', or 'reboot'.")
         sys.exit(1)

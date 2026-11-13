@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../scripts")))
-from flasher import flash_jlink, erase_jlink, flash_app_slot
+from flasher import flash_jlink, erase_jlink, flash_app_slot, reboot_jlink
 
 def pytest_addoption(parser):
     parser.addoption("--target", action="store", default="qemu", choices=["qemu", "hil"], help="Target platform: qemu or hil (real hardware)")
@@ -87,7 +87,20 @@ class STM32Board:
         """flashing slot during test withon reboot"""
         print(f"\n🔄 Flashing Slot {slot} with {fw_image} (NO RESET)...")
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
-
+    
+    def reboot(self, wait_s=1.0):
+        """
+        Аппаратно перезагружает плату через J-Link и очищает буфер UART,
+        чтобы следующий вызов capture_uart_output читал только новый лог загрузки.
+        """
+        print("\n🔄 [TEST ACTION] Rebooting device via J-Link...")
+        reboot_jlink(device="STM32F407VG", speed=4000)
+        
+        time.sleep(wait_s)
+        
+        self.serial_device.reset_input_buffer()
+        print("✅ [TEST ACTION] Reboot complete, UART buffer cleared.\n")
+    
     def wait_for_regex_in_file(self, regex, timeout_s=15):
         """
         Waiting for regex timeout_s seconds
