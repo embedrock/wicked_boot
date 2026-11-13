@@ -10,7 +10,7 @@ def test_load_image_in_primary_slot(board):
     
     uart_log = board.capture_uart_output(duration_s=20)
     
-    assert "Bootloader version:" in uart_log, "Ожидалось 'Bootloader version:' после запуска"
+    assert "Bootloader Version:" in uart_log, "Ожидалось 'Bootloader Version:' после запуска"
     assert "Firmware version:" in uart_log, "Ожидалось 'Firmware version:' после завершения обновления"
 
 @pytest.mark.hil_only
