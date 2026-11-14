@@ -41,7 +41,7 @@ def test_swap_images(board):
     #board.send_byte('\n')
     #board.send_byte('\n')
     #board.send_byte('\n')
-    #board.send_byte('\r')
+    board.send_byte('\r')
     board.send_byte('s')
     board.send_byte('w')
     board.send_byte('a')
