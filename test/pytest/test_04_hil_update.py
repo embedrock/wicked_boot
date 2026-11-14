@@ -38,7 +38,7 @@ def test_swap_images(board):
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
     
     board.send_byte('\n')
-    response = board.send_command("swap", wait_for_response_s=2)
+    response = board.send_command("swap_images", wait_for_response_s=2)
     #assert "bl>" in response
     
     board.reboot(wait_s=5.0)
