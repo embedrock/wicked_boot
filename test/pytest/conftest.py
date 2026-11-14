@@ -162,7 +162,7 @@ class STM32Board:
         # Отправляем команду с переносом строки
         self.serial_device.write(("\r").encode('utf-8'))
         time.sleep(0.5)
-        self.serial_device.write(("command").encode('utf-8'))
+        self.serial_device.write((command).encode('utf-8'))
         time.sleep(0.5)
         self.serial_device.write(("\r").encode('utf-8'))
         
