@@ -152,7 +152,7 @@ class STM32Board:
     def send_command(self, command: str, wait_for_response_s=2):
         """
         Отправляет команду (строку) в UART и возвращает ответ устройства.
-        Автоматически добавляет \n в конец команды.
+        Автоматически добавляет \r в начало и конец команды.
         """
         print(f"   [UART] ➡️ Sending command: '{command}'")
         
@@ -160,7 +160,7 @@ class STM32Board:
         self.serial_device.reset_input_buffer()
         
         # Отправляем команду с переносом строки
-        self.serial_device.write((command + "\n").encode('utf-8'))
+        self.serial_device.write(("\r" + command + "\r").encode('utf-8'))
         
         # Ждем и читаем ответ
         response = self.capture_uart_output(duration_s=wait_for_response_s)
