@@ -160,7 +160,11 @@ class STM32Board:
         self.serial_device.reset_input_buffer()
         
         # Отправляем команду с переносом строки
-        self.serial_device.write(("\r" + command + "\r").encode('utf-8'))
+        self.serial_device.write(("\r").encode('utf-8'))
+        time.sleep(0.5)
+        self.serial_device.write(("command").encode('utf-8'))
+        time.sleep(0.5)
+        self.serial_device.write(("\r").encode('utf-8'))
         
         # Ждем и читаем ответ
         response = self.capture_uart_output(duration_s=wait_for_response_s)
