@@ -38,8 +38,6 @@ def test_swap_images(board):
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
     
     board.send_byte('\n')
-    board.send_byte('\n')
-    board.send_byte('\n')
     board.send_byte('s')
     board.send_byte('w')
     board.send_byte('a')
