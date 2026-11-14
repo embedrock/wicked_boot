@@ -147,7 +147,6 @@ class STM32Board:
         if isinstance(byte_data, str):
             byte_data = byte_data.encode('utf-8')
         self.serial_device.write(byte_data)
-        # Небольшая пауза, чтобы устройство успело обработать
         time.sleep(0.05)
     
     def send_command(self, command: str, wait_for_response_s=2):
