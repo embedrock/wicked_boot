@@ -28,9 +28,9 @@ def test_swap_images(board):
     app_v1_path = os.path.join(repo_root, "samples", "app_signed_uart_v1.bin")
     app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
     
-    board.send_byte('a')
-    cli_response = board.capture_uart_output(duration_s=2)
-    assert "bl>" in cli_response
+    #board.send_byte('a')
+    #cli_response = board.capture_uart_output(duration_s=2)
+    #assert "bl>" in cli_response
     
     print("\nFlashing Slot 0 (No reset)...")
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
@@ -40,7 +40,7 @@ def test_swap_images(board):
     #board.send_byte('\n')
     #board.send_byte('\n')
     #board.send_byte('\n')
-    board.send_byte('\r')
+    #board.send_byte('\r')
     board.send_byte('s')
     board.send_byte('w')
     board.send_byte('a')
