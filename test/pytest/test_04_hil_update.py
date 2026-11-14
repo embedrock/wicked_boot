@@ -41,8 +41,9 @@ def test_swap_images(board):
     response = board.send_command("swap_images", wait_for_response_s=2)
     #assert "bl>" in response
     
-    board.reboot(wait_s=5.0)
+    #board.reboot(wait_s=5.0)
     
+    print("\nChecking uart after reboot (25 seconds)...")
     uart_log = board.capture_uart_output(duration_s=20)
     
     #assert "Bootloader Version:" in uart_log, "Ожидалось 'Bootloader Version:' после запуска"
