@@ -1,5 +1,6 @@
 import pytest
 import os
+import time
 
 @pytest.mark.hil_only
 def test_load_image_in_primary_slot(board):
@@ -36,7 +37,7 @@ def test_swap_images(board):
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
     print("\nFlashing Slot 1 (No reset)...")
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
-    
+    time.sleep(2.5)
     #board.send_byte('\n')
     #board.send_byte('\n')
     #board.send_byte('\n')
