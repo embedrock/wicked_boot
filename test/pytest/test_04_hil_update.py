@@ -53,7 +53,7 @@ def test_swap_images(board):
     board.send_byte('e')
     board.send_byte('s')
     board.send_byte('\n')
-    board.send_byte('\r')
+    #board.send_byte('\r')
     #response = board.send_command("swap_images", wait_for_response_s=2)
     #assert "bl>" in response
     
