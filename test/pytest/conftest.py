@@ -80,16 +80,19 @@ class STM32Board:
     def flash_slot(self, slot: int, fw_image: str):
         """flashing slot during test"""
         self.serial_device.reset_input_buffer()
+        dummy = self.serial_device.read_until().decode('utf-8', errors='replace')
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
     
     def flash_slot_no_reset(self, slot: int, fw_image: str):
         """flashing slot during test withot reboot"""
         self.serial_device.reset_input_buffer()
+        dummy = self.serial_device.read_until().decode('utf-8', errors='replace')
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
     
     def reboot(self, wait_s=1.0):
         """reboot mcu via J-Link and clean UART buffer"""
         self.serial_device.reset_input_buffer()
+        dummy = self.serial_device.read_until().decode('utf-8', errors='replace')
         reboot_jlink(device="STM32F407VG", speed=4000)
         time.sleep(wait_s)
         return True
