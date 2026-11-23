@@ -12,9 +12,7 @@ def test_load_image_in_primary_slot(board):
     cli_response = board.capture_uart_output(duration_s=2)
     assert "bl>" in cli_response
     
-    print("\nFlashing Slot 0 (No reset)...")
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
-    print("\nFlashing Slot 1 (No reset)...")
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)    
     board.reboot(wait_s=5.0)
 
@@ -27,10 +25,7 @@ def test_swap_images(board):
     app_v1_path = os.path.join(repo_root, "samples", "app_signed_uart_v1.bin")
     app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
     
-    
-    print("\nFlashing Slot 0 (No reset)...")
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
-    print("\nFlashing Slot 1 (No reset)...")
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
     time.sleep(0.05)
     
