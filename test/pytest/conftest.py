@@ -124,10 +124,9 @@ class STM32Board:
             while time.time() - start_time < duration_s:
                 # read_until() uses self.serial_device.timeout automaticly
                 line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
-                
-                if line != "":
-                    print(f"          {line}")
-                    output += line
+                #if line != "":
+                print(f"          {line}")
+                output += line
         finally:
             self.serial_device.timeout = original_timeout
             
