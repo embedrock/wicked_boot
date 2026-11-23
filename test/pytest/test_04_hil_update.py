@@ -15,13 +15,11 @@ def test_load_image_in_primary_slot(board):
     print("\nFlashing Slot 0 (No reset)...")
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
     print("\nFlashing Slot 1 (No reset)...")
-    board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
-    
+    board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)    
     board.reboot(wait_s=5.0)
-    
-    uart_log = board.capture_uart_output(duration_s=20)
-    
-    assert "Firmware version: 0.1.0" in uart_log, "Ожидалось 'Firmware version: 0.1.0'"
+
+    match = board.wait_for_regex_in_file(r"Firmware version: 0.1.0")
+    assert match is not None, "Ожидалось 'Firmware version: 0.1.0'"
 
 @pytest.mark.hil_only
 def test_swap_images(board):
