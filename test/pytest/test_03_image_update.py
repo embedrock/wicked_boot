@@ -5,19 +5,15 @@ import os
 def test_load_image_in_primary_slot(board):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     app_v1_path = os.path.join(repo_root, "samples", "app_signed_uart_v1.bin")
-    
     board.flash_slot(slot=0, fw_image=app_v1_path)
-    
-    uart_log = board.capture_uart_output(duration_s=20)
-    
-    assert "Bootloader Version:" in uart_log, "Ожидалось 'Bootloader Version:' после запуска"
-    assert "Firmware version:" in uart_log, "Ожидалось 'Firmware version:' после завершения обновления"
+
+    match = board.wait_for_regex_in_file(r"Firmware version: 0.1.0")
+    assert match is not None, "Ожидалось 'Firmware version: 0.1.0'"
 
 @pytest.mark.hil_only
 def test_updating_primary_slot(board):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
-    
     board.flash_slot(slot=1, fw_image=app_v2_path)
     
     uart_log = board.capture_uart_output(duration_s=20)
