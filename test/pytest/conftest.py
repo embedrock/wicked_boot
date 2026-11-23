@@ -152,10 +152,9 @@ class STM32Board:
             time.sleep(0.5)
         
         time.sleep(0.5)
-        self.serial_device.write(("\r").encode('utf-8'))
-
         self.serial_device.reset_input_buffer()
-        line = self.serial_device.read_until().decode('utf-8', errors='replace')
+        dummy = self.serial_device.read_until().decode('utf-8', errors='replace')
+        self.serial_device.write(("\r").encode('utf-8'))
         
         response = self.capture_uart_output(duration_s=wait_for_response_s)
         
