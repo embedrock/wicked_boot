@@ -79,17 +79,15 @@ class STM32Board:
         
     def flash_slot(self, slot: int, fw_image: str):
         """flashing slot during test"""
-        print(f"\n🔄 Flashing Slot {slot} with {fw_image}...")
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
     
     def flash_slot_no_reset(self, slot: int, fw_image: str):
-        """flashing slot during test withon reboot"""
-        print(f"\n🔄 Flashing Slot {slot} with {fw_image} (NO RESET)...")
+        """flashing slot during test withot reboot"""
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
     
     def reboot(self, wait_s=1.0):
         """reboot mcu via J-Link and clean UART buffer"""
-        print("\n🔄 [TEST ACTION] Rebooting device via J-Link...")
+        print("🔄Rebooting device via J-Link...")
         reboot_jlink(device="STM32F407VG", speed=4000)
         self.serial_device.reset_input_buffer()
         print(f"✅ Reboot complete, UART buffer cleared. Awaiting {wait_s} seconds\n")
@@ -97,9 +95,7 @@ class STM32Board:
         return True
     
     def wait_for_regex_in_file(self, regex, timeout_s=15):
-        """
-        Waiting for regex timeout_s seconds
-        """
+        """Waiting for regex timeout_s seconds"""
         start_time = time.time()
         
         while True:
@@ -115,9 +111,7 @@ class STM32Board:
                 raise RuntimeError(f"Timeout ({timeout_s}s) waiting for regex: {regex}")
         
     def capture_uart_output(self, duration_s=20):
-        """
-        Dump all uart data
-        """
+        """Dump all uart data"""
         start_time = time.time()
         output = ""
         
