@@ -80,10 +80,12 @@ class STM32Board:
     def flash_slot(self, slot: int, fw_image: str):
         """flashing slot during test"""
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000)
+        self.serial_device.reset_input_buffer()
     
     def flash_slot_no_reset(self, slot: int, fw_image: str):
         """flashing slot during test withot reboot"""
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
+        self.serial_device.reset_input_buffer()
     
     def reboot(self, wait_s=1.0):
         """reboot mcu via J-Link and clean UART buffer"""
@@ -114,8 +116,7 @@ class STM32Board:
         """Dump all uart data"""
         start_time = time.time()
         output = ""
-        
-        print(f"          📡 Capturing UART output for {duration_s} seconds...")
+        print(f"📡 Capturing UART output for {duration_s} seconds...")
         original_timeout = self.serial_device.timeout
         self.serial_device.timeout = 0.5 
         
@@ -141,13 +142,9 @@ class STM32Board:
         time.sleep(1.05)
     
     def send_command(self, command: str, wait_for_response_s=2):
-        """
-        Отправляет команду (строку) в UART и возвращает ответ устройства.
-        Автоматически добавляет \r в начало и конец команды.
-        """
+        """Send command (strint) to UART and return responce from device. Add \r in begin and end"""
         print(f"➡️ Sending command: '{command}'")
         
-        # Очищаем буфер от возможных "хвостов"
         self.serial_device.reset_input_buffer()
         
         self.serial_device.write(("\r").encode('utf-8'))
@@ -160,7 +157,6 @@ class STM32Board:
         time.sleep(0.5)
         self.serial_device.write(("\r").encode('utf-8'))
         
-        # Ждем и читаем ответ
         response = self.capture_uart_output(duration_s=wait_for_response_s)
         
         print(f"✅ Command '{command}' sent, response captured.")
