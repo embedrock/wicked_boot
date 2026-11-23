@@ -29,36 +29,17 @@ def test_swap_images(board):
     app_v1_path = os.path.join(repo_root, "samples", "app_signed_uart_v1.bin")
     app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
     
-    #board.send_byte('a')
-    #cli_response = board.capture_uart_output(duration_s=2)
-    #assert "bl>" in cli_response
     
     print("\nFlashing Slot 0 (No reset)...")
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
     print("\nFlashing Slot 1 (No reset)...")
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
     time.sleep(0.05)
-    # board.send_byte('\r')
-    # board.send_byte('s')
-    # board.send_byte('w')
-    # board.send_byte('a')
-    # board.send_byte('p')
-    # board.send_byte('_')
-    # board.send_byte('i')
-    # board.send_byte('m')
-    # board.send_byte('a')
-    # board.send_byte('g')
-    # board.send_byte('e')
-    # board.send_byte('s')
-    # board.send_byte('\r')
     
     response = board.send_command("swap_images", wait_for_response_s=0.05)
-    #assert "bl>" in response
     
-    #board.reboot(wait_s=5.0)
-    
-    print("\nChecking uart after reboot (25 seconds)...")
+    print("\nChecking uart after reboot (20 seconds)...")
     uart_log = board.capture_uart_output(duration_s=20)
-    
-    #assert "Bootloader Version:" in uart_log, "Ожидалось 'Bootloader Version:' после запуска"
-    assert "Firmware version: 0.2.0" in uart_log, "Ожидалось 'Firmware version: 0.2.0'"
+
+    match = board.wait_for_regex_in_file(r"Firmware version: 0.2.0")
+    assert match is not None, "Ожидалось 'Firmware version: 0.2.0'"
