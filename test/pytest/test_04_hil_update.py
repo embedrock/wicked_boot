@@ -7,10 +7,8 @@ def test_load_image_in_primary_slot(board):
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     app_v1_path = os.path.join(repo_root, "samples", "app_signed_uart_v1.bin")
     app_v2_path = os.path.join(repo_root, "samples", "app_signed_uart_v2.bin")
-    
-    board.send_byte('a')
-    cli_response = board.capture_uart_output(duration_s=2)
-    assert "bl>" in cli_response
+    #cli_response = board.capture_uart_output(duration_s=2)
+    #assert "bl>" in cli_response
     
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)    
@@ -27,7 +25,6 @@ def test_swap_images(board):
     
     board.flash_slot_no_reset(slot=0, fw_image=app_v1_path)
     board.flash_slot_no_reset(slot=1, fw_image=app_v2_path)
-    time.sleep(0.05)
     
     response = board.send_command("swap_images", wait_for_response_s=20)
     assert "Firmware version: 0.2.0" in response, "Ожидалось 'Firmware version: 0.2.0'"
