@@ -104,8 +104,8 @@ class STM32Board:
         while True:
             line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
             
-            #if line != "":
-            print(f"          {line}")
+            if line != "" and line != '\n' and line != '\r':
+                print(f"          {line}")
             
             if re.search(regex, line):
                 return True
@@ -124,7 +124,7 @@ class STM32Board:
             while time.time() - start_time < duration_s:
                 # read_until() uses self.serial_device.timeout automaticly
                 line = self.serial_device.read_until().decode('utf-8', errors='replace').replace("\r\n", "")
-                if line != "":
+                if line != "" and line != '\n' and line != '\r':
                     print(f"          {line}")
                     output += line
         finally:
