@@ -39,7 +39,5 @@ def test_swap_images(board):
     response = board.send_command("swap_images", wait_for_response_s=0.05)
     
     print("\nChecking uart after reboot (20 seconds)...")
-    uart_log = board.capture_uart_output(duration_s=20)
-
-    match = board.wait_for_regex_in_file(r"Firmware version: 0.2.0")
+    match = board.wait_for_regex_in_file(r"Firmware version: 0.2.0", timeout_s=20)
     assert match is not None, "Ожидалось 'Firmware version: 0.2.0'"
