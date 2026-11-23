@@ -89,10 +89,8 @@ class STM32Board:
     
     def reboot(self, wait_s=1.0):
         """reboot mcu via J-Link and clean UART buffer"""
-        print("🔄Rebooting device via J-Link...")
         reboot_jlink(device="STM32F407VG", speed=4000)
         self.serial_device.reset_input_buffer()
-        print(f"✅ Reboot complete, UART buffer cleared. Awaiting {wait_s} seconds\n")
         time.sleep(wait_s)
         return True
     
@@ -116,7 +114,6 @@ class STM32Board:
         """Dump all uart data"""
         start_time = time.time()
         output = ""
-        print(f"📡 Capturing UART output for {duration_s} seconds...")
         original_timeout = self.serial_device.timeout
         self.serial_device.timeout = 0.5 
         
@@ -131,7 +128,6 @@ class STM32Board:
         finally:
             self.serial_device.timeout = original_timeout
             
-        print("✅ Capture complete.")
         return output
     
     def send_byte(self, byte_data):
@@ -146,6 +142,7 @@ class STM32Board:
         print(f"➡️ Sending command: '{command}'")
         
         self.serial_device.reset_input_buffer()
+        line = self.serial_device.read_until().decode('utf-8', errors='replace')
         
         self.serial_device.write(("\r").encode('utf-8'))
         time.sleep(0.5)
