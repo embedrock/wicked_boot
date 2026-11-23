@@ -74,7 +74,6 @@ class STM32Board:
         self.serial_device.reset_input_buffer()
         
         if erase_first:
-            print("🧹 Erasing chip before flashing...")
             erase_jlink(device="STM32F407VG", speed=4000)
         flash_jlink(fw_image, device="STM32F407VG", speed=4000)
         
@@ -89,9 +88,7 @@ class STM32Board:
         flash_app_slot(slot=slot, fw_image=fw_image, device="STM32F407VG", speed=4000, reset_after=False)
     
     def reboot(self, wait_s=1.0):
-        """
-        reboot mcu via J-Link and clean UART buffer,
-        """
+        """reboot mcu via J-Link and clean UART buffer"""
         print("\n🔄 [TEST ACTION] Rebooting device via J-Link...")
         reboot_jlink(device="STM32F407VG", speed=4000)
         self.serial_device.reset_input_buffer()
@@ -139,7 +136,7 @@ class STM32Board:
         finally:
             self.serial_device.timeout = original_timeout
             
-        print("          ✅ Capture complete.")
+        print("✅ Capture complete.")
         return output
     
     def send_byte(self, byte_data):
@@ -154,7 +151,7 @@ class STM32Board:
         Отправляет команду (строку) в UART и возвращает ответ устройства.
         Автоматически добавляет \r в начало и конец команды.
         """
-        print(f"   [UART] ➡️ Sending command: '{command}'")
+        print(f"➡️ Sending command: '{command}'")
         
         # Очищаем буфер от возможных "хвостов"
         self.serial_device.reset_input_buffer()
@@ -172,7 +169,7 @@ class STM32Board:
         # Ждем и читаем ответ
         response = self.capture_uart_output(duration_s=wait_for_response_s)
         
-        print(f"   [UART] ✅ Command sent, response captured.")
+        print(f"✅ Command '{command}' sent, response captured.")
         return response
 
 @pytest.fixture(scope="function")
