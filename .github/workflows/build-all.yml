@@ -27,6 +27,7 @@ jobs:
           for preset in qemu-f4 stm32f4-debug stm32f4-release; do
             echo "Building preset: $preset"
             docker compose run --rm stm32-dev cmake --preset $preset --graphviz=build/$preset/graph.dot
+            docker compose run --rm stm32-dev sed -i '/subgraph clusterLegend/,$c\}' build/$preset/graph.dot
             docker compose run --rm stm32-dev dot -Tsvg build/$preset/graph.dot -o docs/arch_$preset.svg
             docker compose run --rm stm32-dev cmake --build --preset $preset
             
