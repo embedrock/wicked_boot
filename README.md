@@ -99,5 +99,10 @@ flowchart TB
     style SC2 fill:#5a5a5a,stroke:#777,stroke-width:1px,color:#fff,font-size:12px
     style SC3 fill:#5a5a5a,stroke:#777,stroke-width:1px,color:#fff,font-size:12px
 ```
+## 🧩 CMake Module Architecture
+
+![CMake Dependency Graph QEMU](docs/arch_qemu-f4.svg)
+![CMake Dependency Graph STM32F4](arch_stm32f4-release.svg)
+
 started from [here](https://interrupt.memfault.com/blog/mcuboot-overview#adding-mcuboot_configh) and [here](https://community.st.com/stm32-mcus-embedded-software-32/porting-mcuboot-to-stm32-image-unset-121014) | shell from [here](https://interrupt.memfault.com/blog/firmware-shell) | about [signing](https://dev.to/ripan030/mcuboot-signing-and-header-analysis-203j)\
 [pytest](https://blog.golioth.io/automated-hardware-testing-using-pytest/) example | [HIL](https://blog.golioth.io/golioth-hil-testing-part1/) example.
