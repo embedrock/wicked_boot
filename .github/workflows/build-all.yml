@@ -7,7 +7,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    # Добавляем права на запись, чтобы бот мог закоммитить обновлённый SVG
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,15 +23,23 @@ jobs:
 
       - name: Build all configurations
         run: |
+          mkdir -p docs
           for preset in qemu-f4 stm32f4-debug stm32f4-release; do
             echo "Building preset: $preset"
-            docker compose run --rm stm32-dev cmake --preset $preset
+            docker compose run --rm stm32-dev cmake --preset $preset --graphviz=build/$preset/graph.dot
+            docker compose run --rm stm32-dev dot -Tsvg build/$preset/graph.dot -o docs/arch_$preset.svg
             docker compose run --rm stm32-dev cmake --build --preset $preset
             
             mkdir -p artifacts/$preset
             cp -r build/$preset/* artifacts/$preset/ 2>/dev/null || true
           done
-
+      - name: Commit updated architecture graph
+        if: github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: update CMake dependency graph [skip ci]"
+          file_pattern: "docs/arch_stm32f4-release.svg docs/arch_qemu-f4.svg"
+          
       - name: Upload all artifacts
         uses: actions/upload-artifact@v4
         with:
