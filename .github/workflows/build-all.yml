@@ -27,12 +27,13 @@ jobs:
           for preset in qemu-f4 stm32f4-debug stm32f4-release; do
             echo "Building preset: $preset"
             docker compose run --rm stm32-dev cmake --preset $preset --graphviz=build/$preset/graph.dot
-            docker compose run --rm stm32-dev sh -c "sed -E \
+            docker compose run --rm stm32-dev sh -c "sed \
               -e '/^subgraph clusterLegend {/,/^[[:space:]]*}/d' \
               -e 's/\[ style = solid \]/[ style = solid, color=\"#4CAF50\", penwidth=2 ]/g' \
               -e 's/\[ style = dashed \]/[ style = dashed, color=\"#FFC107\", penwidth=2 ]/g' \
               -e 's/\[ style = dotted \]/[ style = dotted, color=\"#F44336\", penwidth=2 ]/g' \
-              build/$preset/graph.dot > build/$preset/graph_clean.dot"
+              build/$preset/graph.dot > build/$preset/graph_clean.dot && \
+              dot -Tsvg build/$preset/graph_clean.dot -o docs/arch_$preset.svg"
             docker compose run --rm stm32-dev dot -Tsvg build/$preset/graph_clean.dot -o docs/arch_$preset.svg
             docker compose run --rm stm32-dev cmake --build --preset $preset
             
